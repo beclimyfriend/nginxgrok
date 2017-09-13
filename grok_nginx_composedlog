@@ -13,6 +13,9 @@
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{NEXTSPACE:daemon} %{WORD:user}\|%{IPV4:sourceip}\|%{NEXTPIPE:equipo}\|%{WORD:share}
 \|%{WORD:action}\|%{WORD:status}\|%{GREEDYDATA:path}
 
+#SSH Log messages
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: ((Accepted (password|publickey)|(Failed (password|publickey)) 
+
 #CUSTOM PATTERNS
 CDATE \[.*?\]+
 METHOD (GET|POST)+
