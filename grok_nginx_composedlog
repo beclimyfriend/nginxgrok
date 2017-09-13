@@ -1,14 +1,17 @@
-#Grok pattern for a default nginx composed log
+#Grok pattern for logs
 #For help and more visit http://beclimyfriend.blogspot.com.es/
 #Or contact usetheshell12@gmail.com
 #Joan Chacón 21/04/17
 
-#GROK PATTERN
+#NGINX GROK PATTERN
 %{IPV4:SourceIP} - %{NEXTSPACE:remoteuser} %{CDATE:fecha} "%{METHOD:method} %{URIPATH:urlrequest}%{URIPARAM:args}? 
 %{VERSION:protocolversion}" %{BASE10NUM:status} %{BASE10NUM:bytes} %{QUOTEDSTRING:httpreferer} "%{VERSION:mozillaversion} 
 %{PARENTESISDATA:osversion} %{NEXTSPACE:applewebkitversion} %{PARENTESISDATA:khtml} %{NEXTSPACE:chromeversion} 
 %{NEXTSPACE:safariversion}%{NEXTSPACE:gzipratio}?
 
+#SAMBA MESSAGES
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{NEXTSPACE:daemon} %{WORD:user}\|%{IPV4:sourceip}\|%{NEXTPIPE:equipo}\|%{WORD:share}
+\|%{WORD:action}\|%{WORD:status}\|%{GREEDYDATA:path}
 
 #CUSTOM PATTERNS
 CDATE \[.*?\]+
@@ -16,6 +19,7 @@ METHOD (GET|POST)+
 VERSION \b\w+\/.\..\b
 PARENTESISDATA \(([^)]+)\)
 NEXTSPACE ([^\s]+)
+NEXTPIPE ([^\|]+)
 
 
 #It can be tested with this default log record at https://grokdebug.herokuapp.com/
