@@ -13,9 +13,22 @@
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{NEXTSPACE:daemon} %{WORD:user}\|%{IPV4:sourceip}\|%{NEXTPIPE:equipo}\|%{WORD:share}
 \|%{WORD:action}\|%{WORD:status}\|%{GREEDYDATA:path}
 
-#SSH Log messages
-#Pblickey successful login
-%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_SUCSESS:message} 
+##SSH Log messages##
+#Publickey successful login
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_SUCSESS:message}
+#Pam_unix session open
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_SESSION_OPEN:message}
+#Terminal remote session ended
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_DISCONNECT:message}
+#Pam_unix session closed
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_SESSION_CLOSE:message}
+#Password remote prompt disconnect
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_CONN_CLOSE_PREAUTH:message}
+#Password failure
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_USER_FAIL:message}
+#SSHHD unix auth fail
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_UNIX_FAIL:message}
+
 
 #CUSTOM PATTERNS
 CDATE \[.*?\]+
@@ -24,6 +37,7 @@ VERSION \b\w+\/.\..\b
 PARENTESISDATA \(([^)]+)\)
 NEXTSPACE ([^\s]+)
 NEXTPIPE ([^\|]+)
+SSHD_UNIX_FAIL pam_unix\(sshd:auth\): authentication %{WORD:fail}; logname=%{VALUES_EQUAL:logname}? uid=%{VALUES_EQUAL:uid}? euid=%{VALUES_EQUAL:euid}? tty=%{VALUES_EQUAL:tty}? ruser=%{VALUES_EQUAL:ruser}? rhost=%{VALUES_EQUAL:rhostval}? user=%{VALUES_EQUAL:userval}?
 
 #CUSTOM SSHD PATTENS BY NXHACK
 # sshd grok pattern
@@ -41,8 +55,9 @@ SSHD_TUNN_TIMEOUT   Timeout, client not responding.
 
 # Normal
 SSHD_SUCSESS        (?<sshd_result>Accepted) %{WORD:sshd_auth_type} for %{USERNAME:sshd_user} from %{IP:sshd_client_ip} port %{NUMBER:sshd_port} %{WORD:sshd_protocol}: %{GREEDYDATA:sshd_cipher}
-SSHD_DISCONNECT     Received disconnect from %{IP:sshd_client_ip} port %{NUMBER:sshd_port}:%{NUMBER:sshd_disconnect_code}: (?<sshd_disconnect_status>disconnected by user)
+SSHD_DISCONNECT     Received disconnect from %{IP:sshd_client_ip}: (port %{NUMBER:sshd_port})?%{NUMBER:sshd_disconnect_code}: (?<sshd_disconnect_status>disconnected by user)
 SSHD_CONN_CLOSE     Connection closed by %{IP:sshd_client_ip}$
+SSHD_CONN_CLOSE_PREAUTH     Connection closed by %{IP:sshd_client_ip} \[preauth\]
 SSHD_SESSION_OPEN   pam_unix\(sshd:session\): session opened for user %{USERNAME:sshd_user} by \(uid=\d+\)
 SSHD_SESSION_CLOSE  pam_unix\(sshd:session\): session closed for user %{USERNAME:sshd_user}
 SSHD_SESSION_FAIL   pam_systemd\(sshd:session\): Failed to release session: (?<sshd_disconnect_status>Interrupted system call)
@@ -55,7 +70,7 @@ SSHD_TCPWRAP_FAIL3  warning: %{DATA:sshd_tcpd_file}, line %{NUMBER}: host name/n
 SSHD_TCPWRAP_FAIL4  warning: %{DATA:sshd_tcpd_file}, line %{NUMBER}: host name/name mismatch: reverse lookup results in non-FQDN %{HOSTNAME:sshd_paranoid_hostname}
 SSHD_TCPWRAP_FAIL5  warning: can't get client address: Connection reset by peer
 SSHD_FAIL           Failed %{WORD:sshd_auth_type} for %{USERNAME:sshd_invalid_user} from %{IP:sshd_client_ip} port %{NUMBER:sshd_port} %{WORD:sshd_protocol}
-SSHD_USER_FAIL      Failed password for invalid user %{USERNAME:sshd_invalid_user} from %{IP:sshd_client_ip} port %{NUMBER:sshd_port} %{WORD:sshd_protocol}
+SSHD_USER_FAIL      Failed password for %{USERNAME:ssh_user} from %{IP:sshd_client_ip} port %{NUMBER:sshd_port} %{WORD:sshd_protocol}
 SSHD_INVAL_USER     Invalid user\s*%{USERNAME:sshd_invalid_user}? from %{IP:sshd_client_ip}
 
 # preauth
