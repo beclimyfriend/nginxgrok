@@ -29,7 +29,9 @@
 #SSHHD unix auth fail
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_UNIX_FAIL:message}
 #sshd:auth requirement
-
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_PAM_ERROR:message}
+#sshd failed password with rsa
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_FAIL:message}: %{GREEDYDATA:rsa}
 
 
 
@@ -41,6 +43,9 @@ PARENTESISDATA \(([^)]+)\)
 NEXTSPACE ([^\s]+)
 NEXTPIPE ([^\|]+)
 SSHD_UNIX_FAIL pam_unix\(sshd:auth\): authentication %{WORD:fail}; logname=%{VALUES_EQUAL:logname}? uid=%{VALUES_EQUAL:uid}? euid=%{VALUES_EQUAL:euid}? tty=%{VALUES_EQUAL:tty}? ruser=%{VALUES_EQUAL:ruser}? rhost=%{VALUES_EQUAL:rhostval}? user=%{VALUES_EQUAL:userval}?
+SSHD_PAM_ERROR pam_succeed_if\(sshd:auth\): requirement \"%{DATA:requirement}\" not met by user \"%{DATA:user}\"
+PAM_AUTH_FAILS PAM %{NUMBER:intentos} more authentication failures; logname=%{VALUES_EQUAL:logname}? uid=%{VALUES_EQUAL:uid}? euid=%{VALUES_EQUAL:euid}? tty=%{VALUES_EQUAL:tty}? ruser=%{VALUES_EQUAL:ruser}? rhost=%{VALUES_EQUAL:rhostval}?  user=%{VALUES_EQUAL:userval}?
+
 
 #CUSTOM SSHD PATTENS BY NXHACK
 # sshd grok pattern
