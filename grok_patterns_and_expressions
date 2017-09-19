@@ -32,6 +32,8 @@
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_PAM_ERROR:message}
 #sshd failed password with rsa
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_FAIL:message}: %{GREEDYDATA:rsa}
+#PAM auth fails (brute force)
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{PAM_AUTH_FAILS:message}
 
 
 
