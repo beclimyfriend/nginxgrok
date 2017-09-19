@@ -1,7 +1,7 @@
 #Grok pattern for logs
 #For help and more visit http://beclimyfriend.blogspot.com.es/
 #Or contact usetheshell12@gmail.com
-#Joan Chacón 15/09/17
+#Joan Chacón 19/09/17
 
 #NGINX GROK PATTERN
 %{IPV4:SourceIP} - %{NEXTSPACE:remoteuser} %{CDATE:fecha} "%{METHOD:method} %{URIPATH:urlrequest}%{URIPARAM:args}? 
