@@ -28,6 +28,9 @@
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_USER_FAIL:message}
 #SSHHD unix auth fail
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{SSHD_UNIX_FAIL:message}
+#sshd:auth requirement
+
+
 
 
 #CUSTOM PATTERNS
