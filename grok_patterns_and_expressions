@@ -35,6 +35,7 @@
 #PAM auth fails (brute force)
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{PAM_AUTH_FAILS:message}
 
+##Postfix maillog messages##
 
 
 #CUSTOM PATTERNS
@@ -44,6 +45,8 @@ VERSION \b\w+\/.\..\b
 PARENTESISDATA \(([^)]+)\)
 NEXTSPACE ([^\s]+)
 NEXTPIPE ([^\|]+)
+SSHDAEMON sshd(\[\d+\])
+POSTFIXDAEMON postfix\/%{WORD:daemon}(\[\d+\])
 SSHD_UNIX_FAIL pam_unix\(sshd:auth\): authentication %{WORD:fail}; logname=%{VALUES_EQUAL:logname}? uid=%{VALUES_EQUAL:uid}? euid=%{VALUES_EQUAL:euid}? tty=%{VALUES_EQUAL:tty}? ruser=%{VALUES_EQUAL:ruser}? rhost=%{VALUES_EQUAL:rhostval}? user=%{VALUES_EQUAL:userval}?
 SSHD_PAM_ERROR pam_succeed_if\(sshd:auth\): requirement \"%{DATA:requirement}\" not met by user \"%{DATA:user}\"
 PAM_AUTH_FAILS PAM %{NUMBER:intentos} more authentication failures; logname=%{VALUES_EQUAL:logname}? uid=%{VALUES_EQUAL:uid}? euid=%{VALUES_EQUAL:euid}? tty=%{VALUES_EQUAL:tty}? ruser=%{VALUES_EQUAL:ruser}? rhost=%{VALUES_EQUAL:rhostval}?  user=%{VALUES_EQUAL:userval}?
