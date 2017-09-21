@@ -1,14 +1,15 @@
-#Grok pattern for logs
+#Grok patterns for logs
 #For help and more visit http://beclimyfriend.blogspot.com.es/
 #Or contact usetheshell12@gmail.com
 #Joan Chacón 19/09/17
 
-#NGINX GROK PATTERN
+#NGINX GROK PATTERN (OLD)
 %{IPV4:SourceIP} - %{NEXTSPACE:remoteuser} %{CDATE:fecha} "%{METHOD:method} %{URIPATH:urlrequest}%{URIPARAM:args}? 
 %{VERSION:protocolversion}" %{BASE10NUM:status} %{BASE10NUM:bytes} %{QUOTEDSTRING:httpreferer} "%{VERSION:mozillaversion} 
 %{PARENTESISDATA:osversion} %{NEXTSPACE:applewebkitversion} %{PARENTESISDATA:khtml} %{NEXTSPACE:chromeversion} 
 %{NEXTSPACE:safariversion}%{NEXTSPACE:gzipratio}?
-
+#FUNCIONAL ACTUAL
+%{IPV4:SourceIP} - %{NEXTSPACE:remoteuser} %{CDATE:fecha} "%{METHOD:method} %{URIPATH:urlrequest}%{URIPARAM:args}? %{VERSION:protocolversion}" %{BASE10NUM:status} %{BASE10NUM:bytes} %{QUOTEDSTRING:httpreferer}? "%{MOZILLAVERSION:mozillaversion} %{PARENTESISDATA:osversion}%{APPLEWBKIT:applewebkitversion}?( \(KHTML, like Gecko\)|%{NEXTSPACE:khtmlversion}) (%{CHROMEVERSION:chromeversion} %{SAFARIVERSION:safariversion}" |%{FIREFOXVERSION:firefoxversion}" )%{NEXTSPACE:gzipratio}?
 #SAMBA MESSAGES
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{NEXTSPACE:daemon} %{WORD:user}\|%{IPV4:sourceip}\|%{NEXTPIPE:equipo}\|%{WORD:share}
 \|%{WORD:action}\|%{WORD:status}\|%{GREEDYDATA:path}
@@ -42,10 +43,16 @@
 CDATE \[.*?\]+
 METHOD (GET|POST)+
 VERSION \b\w+\/.\..\b
-PARENTESISDATA \(([^)]+)\)
+PARENTESISDATA \(([^)]+)\)\s
 NEXTSPACE ([^\s]+)
 NEXTPIPE ([^\|]+)
 SSHDAEMON sshd(\[\d+\])
+APPLEWBKIT AppleWebKit\/\d+\.\d+
+SAFARIVERSION Safari\/\d+\.\d+
+CHROMEVERSION Chrome\/\d+[\.\d+]{2,}
+FIREFOXVERSION Firefox\/\d+\.\d+
+MOZILLAVERSION Mozilla\/\d+\.\d+
+GECKOVERSION Gecko\/\d
 POSTFIXDAEMON postfix\/%{WORD:daemon}(\[\d+\])
 SSHD_UNIX_FAIL pam_unix\(sshd:auth\): authentication %{WORD:fail}; logname=%{VALUES_EQUAL:logname}? uid=%{VALUES_EQUAL:uid}? euid=%{VALUES_EQUAL:euid}? tty=%{VALUES_EQUAL:tty}? ruser=%{VALUES_EQUAL:ruser}? rhost=%{VALUES_EQUAL:rhostval}? user=%{VALUES_EQUAL:userval}?
 SSHD_PAM_ERROR pam_succeed_if\(sshd:auth\): requirement \"%{DATA:requirement}\" not met by user \"%{DATA:user}\"
