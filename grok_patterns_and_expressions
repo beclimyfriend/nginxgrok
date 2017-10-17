@@ -37,9 +37,31 @@
 %{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{SSHDAEMON:sshpid}: %{PAM_AUTH_FAILS:message}
 
 ##Postfix maillog messages##
-
+#Start TLS
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{POSTFIXDAEMON:postfixd}: %{POSTFIXSTARTTLS:action}
+#Host connect
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{POSTFIXDAEMON:postfixd}: %{POSTFIXCONNECT:action
+#Postfix Client
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{POSTFIXDAEMON:postfixd}: %{POSTFIXCLIENT:action}
+#Postfix Message-id
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{POSTFIXDAEMON:postfixd}: %{POSTFIXMESSAGEID:action}
+#Postfix Queued Message
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{POSTFIXDAEMON:postfixd}: %{POSTFIXQUEUEDMESSAGE:action}
+#Postfix Disconnect
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{POSTFIXDAEMON:postfixd}: %{POSTFIXDISCONNECT:action}
+#Postfix Network Unreachable
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{POSTFIXDAEMON:postfixd}: %{POSTFIXNETWORKUNREACHABLE:action}
+#Postfix Send Message
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{POSTFIXDAEMON:postfixd}: %{POSTFIXSENDMESSAGE:action}
+#Postfix Remove Message
+%{SYSLOGTIMESTAMP:fecha} %{NEXTSPACE:host} %{POSTFIXDAEMON:postfixd}: %{POSTFIXREMOVEMESSAGE:remove}
 
 #CUSTOM PATTERNS
+MINMAXDATA <(.*?)>
+NEXTCOLON ([^:]+)
+DATAUNTILSQUAREB [^\[]*
+DATAUNTILCOMMA [^,]*
+SQUAREBRACKETSDATA \[(.*?)\]
 CDATE \[.*?\]+
 METHOD (GET|POST)+
 VERSION \b\w+\/.\..\b
@@ -58,6 +80,16 @@ SSHD_UNIX_FAIL pam_unix\(sshd:auth\): authentication %{WORD:fail}; logname=%{VAL
 SSHD_PAM_ERROR pam_succeed_if\(sshd:auth\): requirement \"%{DATA:requirement}\" not met by user \"%{DATA:user}\"
 PAM_AUTH_FAILS PAM %{NUMBER:intentos} more authentication failures; logname=%{VALUES_EQUAL:logname}? uid=%{VALUES_EQUAL:uid}? euid=%{VALUES_EQUAL:euid}? tty=%{VALUES_EQUAL:tty}? ruser=%{VALUES_EQUAL:ruser}? rhost=%{VALUES_EQUAL:rhostval}?  user=%{VALUES_EQUAL:userval}?
 
+#POSTFIX EXPRESSIONS
+POSTFIXSTARTTLS tlsmgr_cache_run_event: start TLS smtpd session cache cleanup
+POSTFIXCONNECT connect from %{DATAUNTILSQUAREB:remotehost}%{SQUAREBRACKETSDATA:hostip}
+POSTFIXCLIENT %{NEXTCOLON:mailid}: client=%{DATAUNTILSQUAREB:remotehost}%{SQUAREBRACKETSDATA:hostip}
+POSTFIXMESSAGEID %{NEXTCOLON:mailid}: message-id=%{MINMAXDATA:id}
+POSTFIXQUEUEDMESSAGE %{NEXTCOLON:mailid}: from=%{MINMAXDATA:frommail}, size=%{BASE10NUM:size}, nrcpt=%{BASE10NUM:nrcpt}
+POSTFIXDISCONNECT %{WORD:action} from %{DATAUNTILSQUAREB:remotehost}%{SQUAREBRACKETSDATA:hostip}
+POSTFIXNETWORKUNREACHABLE connect to %{DATAUNTILSQUAREB:url}%{SQUAREBRACKETSDATA:ip}:%{BASE10NUM:port}: %{GREEDYDATA:info}
+POSTFIXSENDMESSAGE %{NEXTCOLON:mailid}: to=%{MINMAXDATA:destmail}, relay=%{DATAUNTILSQUAREB:relayhost}%{SQUAREBRACKETSDATA:relayip}:%{BASE10NUM:port}, delay=%{BASE10NUM:delay}, delays=%{DATAUNTILCOMMA:delays}, dsn=%{DATAUNTILCOMMA:dsn}, status=%{WORD:status} %{GREEDYDATA:statusinfo}
+POSTFIXREMOVEMESSAGE %{NEXTCOLON:mailid}: %{WORD:action}
 
 #CUSTOM SSHD PATTENS BY NXHACK
 # sshd grok pattern
